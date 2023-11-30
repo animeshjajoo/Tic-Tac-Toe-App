@@ -310,6 +310,7 @@ public class GameFragment extends Fragment {
               int value = Integer.parseInt(dataSnapshot.child("wins").getValue().toString());
               value = value + 1;
               dataSnapshot.getRef().child("wins").setValue(value);
+              Toast.makeText(requireContext(), "You Won", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -330,6 +331,7 @@ public class GameFragment extends Fragment {
               int value = Integer.parseInt(dataSnapshot.child("losses").getValue().toString());
               value = value + 1;
               dataSnapshot.getRef().child("losses").setValue(value);
+              Toast.makeText(requireContext(), "You Lost", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -349,6 +351,7 @@ public class GameFragment extends Fragment {
               int value = Integer.parseInt(dataSnapshot.child("draws").getValue().toString());
               value = value + 1;
               dataSnapshot.getRef().child("draws").setValue(value);
+              Toast.makeText(requireContext(), "You Drew", Toast.LENGTH_SHORT).show();
             }
 
             @Override
