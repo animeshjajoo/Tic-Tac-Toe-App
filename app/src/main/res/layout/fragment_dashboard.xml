@@ -7,117 +7,51 @@
     android:layout_height="match_parent"
     tools:context=".DashboardFragment">
 
-  <LinearLayout
-      android:id="@+id/txt_score"
-      android:layout_width="match_parent"
+  <TextView
+      android:id="@+id/txt_wins"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:orientation="horizontal"
-      app:layout_constraintBottom_toTopOf="@+id/list_ll"
+      android:text="@string/wins"
+      android:textAppearance="@style/TextAppearance.AppCompat.Large"
+      app:layout_constraintBottom_toTopOf="@+id/list"
+      app:layout_constraintEnd_toStartOf="@+id/txt_losses"
+      app:layout_constraintHorizontal_bias="0.533"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <TextView
+      android:id="@+id/txt_losses"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/losses"
+      android:textAppearance="@style/TextAppearance.AppCompat.Large"
+      app:layout_constraintBottom_toTopOf="@+id/list"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      android:baselineAligned="false">
+      app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_weight="1">
+  <TextView
+      android:id="@+id/txt_draws"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/draws"
+      android:textAppearance="@style/TextAppearance.AppCompat.Large"
+      app:layout_constraintBottom_toTopOf="@+id/list"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.466"
+      app:layout_constraintStart_toEndOf="@+id/txt_losses"
+      app:layout_constraintTop_toTopOf="parent" />
 
-      <TextView
-          android:id="@+id/won_score"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:textSize="32sp"
-          android:text="@string/_0"
-          android:textAlignment="center"
-          android:textColor="@color/black"/>
-
-      <TextView
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="@string/won"
-          android:textAlignment="center"
-          android:textColor="#2E7D32"
-          android:textSize="12sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_weight="1">
-
-      <TextView
-          android:id="@+id/draw_score"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:textSize="32sp"
-          android:text="@string/_0"
-          android:textAlignment="center"
-          android:textColor="@color/black"/>
-
-      <TextView
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="@string/draws"
-          android:textAlignment="center"
-          android:textColor="@color/black"
-          android:textSize="12sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_weight="1">
-
-      <TextView
-          android:id="@+id/lost_score"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:textSize="32sp"
-          android:text="@string/_0"
-          android:textAlignment="center"
-          android:textColor="@color/black"/>
-
-      <TextView
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="@string/lost"
-          android:textAlignment="center"
-          android:textColor="#DD2C00"
-          android:textSize="12sp" />
-    </LinearLayout>
-
-  </LinearLayout>
-
-
-  <LinearLayout
+  <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/list"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:id="@+id/list_ll"
-      android:orientation="vertical"
+      app:layoutManager="LinearLayoutManager"
+
       app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent">
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/open_games"
-        android:id="@+id/open_display"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        android:layout_margin="20dp"/>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layoutManager="LinearLayoutManager"
-        tools:listitem="@layout/fragment_item" />
-  </LinearLayout>
+      tools:layout_editor_absoluteX="16dp"
+      tools:listitem="@layout/fragment_item" />
+
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/fab_new_game"

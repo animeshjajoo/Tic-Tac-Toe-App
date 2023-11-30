@@ -13,7 +13,6 @@
       android:layout_margin="@dimen/text_margin"
       android:autofillHints="@string/email"
       android:hint="@string/email"
-      android:padding="15dp"
       android:inputType="textEmailAddress"
       app:layout_constraintBottom_toTopOf="@+id/edit_password"
       app:layout_constraintEnd_toEndOf="parent"
@@ -29,7 +28,6 @@
       android:layout_margin="@dimen/text_margin"
       android:autofillHints="Password"
       android:ems="10"
-      android:padding="15dp"
       android:hint="@string/password"
       android:inputType="textPassword"
       app:layout_constraintBottom_toTopOf="@+id/btn_log_in"
@@ -43,17 +41,6 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="@string/login"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="@+id/edit_password"
-      app:layout_constraintHorizontal_bias="0.5"
-      app:layout_constraintStart_toStartOf="@+id/edit_password"
-      app:layout_constraintTop_toBottomOf="@+id/edit_password" />
-
-  <Button
-      android:id="@+id/btn_register"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/register"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="@+id/edit_password"
       app:layout_constraintHorizontal_bias="0.5"

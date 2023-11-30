@@ -1,62 +1,49 @@
 package androidsamples.java.tictactoe;
 
-import static java.util.List.of;
-
 import androidx.lifecycle.ViewModel;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class GameModel extends ViewModel {
-    private List<String> gameState;
-    private boolean isOpen;
-    private String currentHost;
-    private String challenger;
+    private String host, gameID;
     private int turn;
-    private String gameId;
-    public GameModel(){
-        String arr[] = {"", "", "", "", "", "", "", "", ""};
-        gameState = Arrays.asList(arr);
-    }
-    public GameModel(List<String> gameState, boolean isOpen, String currentHost, String challenger, int turn, String gameId) {
-        this.gameState = gameState;
-        this.isOpen = isOpen;
-        this.currentHost = currentHost;
-        this.challenger = challenger;
-        this.turn = turn;
-        this.gameId = gameId;
+    private boolean isOpen;
+
+    public boolean isGameEnd() {
+        return gameEnd;
     }
 
-    public List<String> getGameState() {
-        return gameState;
+    public void setGameEnd(boolean gameEnd) {
+        this.gameEnd = gameEnd;
     }
 
-    public void setGameState(List<String> gameState) {
-        this.gameState = gameState;
+    private boolean gameEnd;
+    private List<String> gameArray = null;
+    public GameModel() {}
+    public GameModel(String host, String id) {
+        this.host = host;
+        isOpen = true;
+        gameEnd = false;
+        gameArray = Arrays.asList("", "", "", "", "", "", "", "", "");
+        this.gameID = id;
+        turn = 1;
     }
 
-    public boolean isOpen() {
-        return isOpen;
+    public String getHost() {
+        return host;
     }
 
-    public void setOpen(boolean open) {
-        isOpen = open;
+    public void setHost(String host) {
+        this.host = host;
     }
 
-    public String getCurrentHost() {
-        return currentHost;
+    public String getGameID() {
+        return gameID;
     }
 
-    public void setCurrentHost(String currentHost) {
-        this.currentHost = currentHost;
-    }
-
-    public String getChallenger() {
-        return challenger;
-    }
-
-    public void setChallenger(String challenger) {
-        this.challenger = challenger;
+    public void setGameID(String gameID) {
+        this.gameID = gameID;
     }
 
     public int getTurn() {
@@ -67,16 +54,26 @@ public class GameModel extends ViewModel {
         this.turn = turn;
     }
 
-    public String getGameId() {
-        return gameId;
+    public boolean isOpen() {
+        return isOpen;
     }
 
-    public void setGameId(String gameId) {
-        this.gameId = gameId;
+    public void setOpen(boolean open) {
+        isOpen = open;
     }
 
-    public void updateGameState(GameModel o) {
-        gameState = o.getGameState();
-        turn = o.getTurn();
+    public List<String> getGameArray() {
+        return gameArray;
     }
+
+    public void setGameArray(List<String> gameArray) {
+        this.gameArray = gameArray;
+    }
+
+    public void updateGameArray(GameModel o) {
+        gameArray = o.gameArray;
+        turn = o.turn;
+        gameEnd = o.gameEnd;
+    }
+
 }
