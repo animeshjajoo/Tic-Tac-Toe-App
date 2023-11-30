@@ -9,6 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -44,7 +45,10 @@ public class GameFragment extends Fragment {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setHasOptionsMenu(true);
-
+    game = new ViewModelProvider(this).get(GameModel.class);
+//    if(game==null)
+//    game.setGameState(Arrays.asList(Arrays.copyOf(gameState,9)));
+    Log.d(TAG,game.getGameState().toString());
     // Extract the argument passed with the action in a type-safe way
     GameFragmentArgs args = GameFragmentArgs.fromBundle(requireArguments());
     Log.d(TAG, "New game type = " + args.getGameType());
@@ -94,7 +98,7 @@ public class GameFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
 
     display = view.findViewById(R.id.display_tv);
-
+    updateUI();
     if (!isSinglePlayer) {
       gameReference.document(game.getGameId())
               .addSnapshotListener((value, error) -> {
@@ -203,6 +207,7 @@ public class GameFragment extends Fragment {
             endGame(0);
             return;
           }
+          game.setGameState(Arrays.asList(Arrays.copyOf(gameState,9)));
           myTurn = !myTurn;
           if (isSinglePlayer) {
             computerPlayerMove();
@@ -310,8 +315,9 @@ public class GameFragment extends Fragment {
   }
 
   private void updateUI() {
-    for (int i = 0; i < gameState.length; i++) {
-      String v = gameState[i];
+    Log.d(TAG,"updateUI: "+game.getGameState().toString());
+    for (int i = 0; i < game.getGameState().size(); i++) {
+      String v = game.getGameState().get(i);
       if (!v.isEmpty()) {
         mButtons[i].setText(v);
         mButtons[i].setClickable(false);
@@ -345,6 +351,7 @@ public class GameFragment extends Fragment {
     mButtons[x].setClickable(false);
     myTurn = !myTurn;
     display.setText(R.string.your_turn);
+    game.setGameState(Arrays.asList(Arrays.copyOf(gameState,9)));
     int win = checkWin();
     if (win == 1 || win == -1) endGame(win);
     else if (checkDraw()) endGame(0);

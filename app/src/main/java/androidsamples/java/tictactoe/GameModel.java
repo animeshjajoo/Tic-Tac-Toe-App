@@ -1,15 +1,23 @@
 package androidsamples.java.tictactoe;
 
+import static java.util.List.of;
+
+import androidx.lifecycle.ViewModel;
+
+import java.util.Arrays;
 import java.util.List;
 
-public class GameModel {
+public class GameModel extends ViewModel {
     private List<String> gameState;
     private boolean isOpen;
     private String currentHost;
     private String challenger;
     private int turn;
     private String gameId;
-
+    public GameModel(){
+        String arr[] = {"", "", "", "", "", "", "", "", ""};
+        gameState = Arrays.asList(arr);
+    }
     public GameModel(List<String> gameState, boolean isOpen, String currentHost, String challenger, int turn, String gameId) {
         this.gameState = gameState;
         this.isOpen = isOpen;
