@@ -19,13 +19,13 @@ public class GameModel extends ViewModel {
     }
 
     private boolean gameEnd;
-    private List<String> gameArray = null;
+    private List<String> grid = null;
     public GameModel() {}
     public GameModel(String host, String id) {
         this.host = host;
         isOpen = true;
         gameEnd = false;
-        gameArray = Arrays.asList("", "", "", "", "", "", "", "", "");
+        grid = Arrays.asList("", "", "", "", "", "", "", "", "");
         this.gameID = id;
         turn = 1;
     }
@@ -62,18 +62,18 @@ public class GameModel extends ViewModel {
         isOpen = open;
     }
 
-    public List<String> getGameArray() {
-        return gameArray;
+    public List<String> getGrid() {
+        return grid;
     }
 
-    public void setGameArray(List<String> gameArray) {
-        this.gameArray = gameArray;
+    public void setGrid(List<String> grid) {
+        this.grid = grid;
     }
 
-    public void updateGameArray(GameModel o) {
-        gameArray = o.gameArray;
-        turn = o.turn;
-        gameEnd = o.gameEnd;
+    public void updateGrid(GameModel gm) {
+        grid = gm.grid;
+        turn = gm.turn;
+        gameEnd = gm.gameEnd;
     }
 
 }

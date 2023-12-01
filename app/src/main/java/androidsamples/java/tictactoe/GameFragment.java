@@ -51,37 +51,26 @@ import java.util.Random;
 public class GameFragment extends Fragment {
   private static final String TAG = "GameFragment";
   private static final int GRID_SIZE = 9;
-
-  private final Button[] mButtons = new Button[GRID_SIZE];
-  private NavController mNavController;
-
-  String gameType = "One-Player", gameID = "", status = "playing";
-
-
-
-  // ................................
+  private final Button[] Buttons = new Button[GRID_SIZE];
+  private NavController NavController;
+  String gameType = "Single Player", gameID = "", status = "playing";
   private DatabaseReference gameReference, userReference;
-
-  private String myChar = "X", otherChar = "O";
+  private String myMove = "X", otherMove = "O";
   private boolean myTurn = true, isSinglePlayer = false, gameEnded = false, isHost = true, gameEnd = false;
-  String[] gameArray = new String[]{"", "", "", "", "", "", "", "", ""};
+  String[] grid = new String[]{"", "", "", "", "", "", "", "", ""};
   private GameModel game;
 
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setHasOptionsMenu(true); // Needed to display the action menu for this fragment
+    setHasOptionsMenu(true);
     game = new ViewModelProvider(requireActivity()).get(GameModel.class);
-    // Extract the argument passed with the action in a type-safe way
     GameFragmentArgs args = GameFragmentArgs.fromBundle(getArguments());
-    Log.d(TAG, "New game type = " + args.getGameType());
-    Log.d(TAG, "New game ID = " + args.getGameID());
 
-    if (args.getGameType().toString().equals("One-Player")) {
+    if (args.getGameType().toString().equals("Single Player")) {
       isSinglePlayer = true;
     }
     userReference = FirebaseDatabase.getInstance("https://tictactoe-ajbbk-default-rtdb.firebaseio.com/").getReference("users").child(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
-
     if (!isSinglePlayer) {
       gameReference = FirebaseDatabase.getInstance("https://tictactoe-ajbbk-default-rtdb.firebaseio.com/").getReference("games").child(args.getGameID());
       gameReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -89,48 +78,45 @@ public class GameFragment extends Fragment {
         public void onDataChange(@NonNull DataSnapshot snapshot) {
           game = snapshot.getValue(GameModel.class);
           if (game != null) {
-            gameArray = (game.getGameArray()).toArray(new String[9]);
+            grid = (game.getGrid()).toArray(new String[9]);
             gameID = game.getGameID();
             gameEnd = game.isGameEnd();
             if (game != null && game.getTurn() == 1) {
               if (game != null && game.getHost().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                 isHost = true;
                 myTurn = true;
-                myChar = "X";
-                otherChar = "O";
+                myMove = "X";
+                otherMove = "O";
               } else {
                 isHost = false;
                 myTurn = false;
-                myChar = "O";
-                otherChar = "X";
+                myMove = "O";
+                otherMove = "X";
               }
             } else {
               if (game != null && !game.getHost().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                 myTurn = true;
-                myChar = "O";
-                otherChar = "X";
+                myMove = "O";
+                otherMove = "X";
                 isHost = false;
               } else {
                 isHost = true;
                 myTurn = false;
-                myChar = "X";
-                otherChar = "O";
+                myMove = "X";
+                otherMove = "O";
               }
             }
           }
         }
         @Override
         public void onCancelled(@NonNull DatabaseError error) {
-          Log.e("Game setup error", error.getMessage());
         }
       });
     }
-
-    // Handle the back press by adding a confirmation dialog
+    
     OnBackPressedCallback callback = new OnBackPressedCallback(true) {
       @Override
       public void handleOnBackPressed() {
-//        Log.d(TAG, "Back pressed");
         if( !gameEnded ) {
           AlertDialog dialog = new AlertDialog.Builder(requireActivity())
                   .setTitle(R.string.confirm)
@@ -144,7 +130,7 @@ public class GameFragment extends Fragment {
                         dataSnapshot.getRef().child("losses").setValue(value);
 
                         for (int i = 0; i < 9; i++) {
-                          mButtons[i].setClickable(false);
+                          Buttons[i].setClickable(false);
                         }
                         gameEnded = true;
                         gameEnd = true;
@@ -152,7 +138,6 @@ public class GameFragment extends Fragment {
                         if(!isSinglePlayer)
                           updateDB();
                       }
-
                       @Override
                       public void onCancelled(@NonNull DatabaseError error) {
 
@@ -160,7 +145,7 @@ public class GameFragment extends Fragment {
                     });
                     gameEnd = true;
                     gameEnded = true;
-                    mNavController.popBackStack();
+                    NavController.popBackStack();
                   })
                   .setNegativeButton(R.string.cancel, (d, which) -> d.dismiss())
                   .create();
@@ -174,7 +159,6 @@ public class GameFragment extends Fragment {
 
     requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
   }
-
   @Override
   public View onCreateView(LayoutInflater inflater,
                            ViewGroup container,
@@ -188,7 +172,7 @@ public class GameFragment extends Fragment {
 
     if (!isSinglePlayer) {
       boolean check = false;
-      for (String s : gameArray) {
+      for (String s : grid) {
         if (!s.isEmpty()) {
           check = true;
           break;
@@ -199,41 +183,36 @@ public class GameFragment extends Fragment {
       }
     }
 
-    Log.d(TAG, "onViewCreated: " + game.getGameArray());
+    NavController = Navigation.findNavController(view);
 
-    mNavController = Navigation.findNavController(view);
-
-    mButtons[0] = view.findViewById(R.id.button0);
-    mButtons[1] = view.findViewById(R.id.button1);
-    mButtons[2] = view.findViewById(R.id.button2);
-
-    mButtons[3] = view.findViewById(R.id.button3);
-    mButtons[4] = view.findViewById(R.id.button4);
-    mButtons[5] = view.findViewById(R.id.button5);
-
-    mButtons[6] = view.findViewById(R.id.button6);
-    mButtons[7] = view.findViewById(R.id.button7);
-    mButtons[8] = view.findViewById(R.id.button8);
+    Buttons[0] = view.findViewById(R.id.button0);
+    Buttons[1] = view.findViewById(R.id.button1);
+    Buttons[2] = view.findViewById(R.id.button2);
+    Buttons[3] = view.findViewById(R.id.button3);
+    Buttons[4] = view.findViewById(R.id.button4);
+    Buttons[5] = view.findViewById(R.id.button5);
+    Buttons[6] = view.findViewById(R.id.button6);
+    Buttons[7] = view.findViewById(R.id.button7);
+    Buttons[8] = view.findViewById(R.id.button8);
 
     if (savedInstanceState != null) {
       checkGameEnd();
-      gameArray = game.getGameArray().toArray(new String[9]);
+      grid = game.getGrid().toArray(new String[9]);
       for (int i = 0; i < 9; i++) {
-        if(!gameArray[i].isEmpty()) {
-          mButtons[i].setText(gameArray[i]);
-          mButtons[i].setClickable(false);
+        if(!grid[i].isEmpty()) {
+          Buttons[i].setText(grid[i]);
+          Buttons[i].setClickable(false);
         }
       }
     }
 
-    for (int i = 0; i < mButtons.length; i++) {
+    for (int i = 0; i < Buttons.length; i++) {
       int finalI = i;
-      mButtons[i].setOnClickListener(v -> {
+      Buttons[i].setOnClickListener(v -> {
         if( myTurn ) {
-          Log.d(TAG, "Button " + finalI + " clicked");
-          ((Button) v).setText(myChar);
-          gameArray[finalI] = myChar;
-          game.setGameArray(Arrays.asList(gameArray));
+          ((Button) v).setText(myMove);
+          grid[finalI] = myMove;
+          game.setGrid(Arrays.asList(grid));
           v.setClickable(false);
           if (!isSinglePlayer) {
             updateDB();
@@ -242,18 +221,14 @@ public class GameFragment extends Fragment {
           checkGameEnd();
           if(gameEnded) return;
           myTurn = !myTurn ;
-
           if ( isSinglePlayer ) {
             Random rand = new Random();
-
             int x = rand.nextInt(9);
-            while (!gameArray[x].isEmpty()) x = rand.nextInt(9);
-
-            gameArray[x] = otherChar;
-            mButtons[x].setText(otherChar);
-            mButtons[x].setClickable(false);
+            while (!grid[x].isEmpty()) x = rand.nextInt(9);
+            grid[x] = otherMove;
+            Buttons[x].setText(otherMove);
+            Buttons[x].setClickable(false);
             myTurn = !myTurn;
-
             checkGameEnd();
           } else {
             waitForOtherPlayer();
@@ -272,30 +247,13 @@ public class GameFragment extends Fragment {
     inflater.inflate(R.menu.menu_logout, menu);
     // this action menu is handled in MainActivity
   }
-  private void showResultDialog(String message) {
-    AlertDialog dialog = new AlertDialog.Builder(requireActivity())
-            .setTitle(message)
-            .setMessage("")
-            .setPositiveButton(R.string.ok, (d, which) -> {
-              d.dismiss();
-              if (isSinglePlayer) {
-                // Navigate back to the dashboard fragment for single-player mode
-                mNavController.navigateUp();
-              } else {
-                // Navigate back to the list of open games for two-player mode
-                mNavController.popBackStack();
-              }
-            })
-            .create();
-    dialog.show();
-  }
-  public void gameUpDialog(String title, String body, String winner, String gameType) {
+  public void gameDialog(String title, String body, String winner, String gameType) {
 
-    Log.d(TAG, "gameUpDialog: lol 1");
+    Log.d(TAG, "gameDialog: lol 1");
     if (gameEnded) return;
 
     int win;
-    if (winner.equals(myChar)) win = 1;
+    if (winner.equals(myMove)) win = 1;
     else if (winner.equals("draw")) win = 0;
     else win = -1;
 
@@ -303,19 +261,17 @@ public class GameFragment extends Fragment {
       case 1:
         if(!gameEnded) {
 //          gameEnd = true;
-          showResultDialog(getString(R.string.congratulations));
           userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
               int value = Integer.parseInt(dataSnapshot.child("wins").getValue().toString());
               value = value + 1;
               dataSnapshot.getRef().child("wins").setValue(value);
-              Toast.makeText(requireContext(), "You Won", Toast.LENGTH_SHORT).show();
+              Toast.makeText(requireContext(), "Congratulations, You Won", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
           });
         }
@@ -324,19 +280,17 @@ public class GameFragment extends Fragment {
       case -1:
         if(!gameEnded) {
 //          gameEnd = true;
-          showResultDialog(getString(R.string.sorry));
           userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
               int value = Integer.parseInt(dataSnapshot.child("losses").getValue().toString());
               value = value + 1;
               dataSnapshot.getRef().child("losses").setValue(value);
-              Toast.makeText(requireContext(), "You Lost", Toast.LENGTH_SHORT).show();
+              Toast.makeText(requireContext(), "Sorry, You Lost :(", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
           });
         }
@@ -344,7 +298,6 @@ public class GameFragment extends Fragment {
       case 0:
         if(!gameEnded) {
 //          gameEnd = true;
-          showResultDialog(getString(R.string.draw));
           userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -353,72 +306,52 @@ public class GameFragment extends Fragment {
               dataSnapshot.getRef().child("draws").setValue(value);
               Toast.makeText(requireContext(), "You Drew", Toast.LENGTH_SHORT).show();
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
           });
         }
         break;
       default:
-        Log.i(TAG, "Error game dialog: " + win);
         break;
     }
 
-//    for (int i = 0; i < 9; i++) {
-//      mButtons[i].setClickable(false);
-//    }
     gameEnded = true;
 
     if(!isSinglePlayer)
       updateDB();
-
-    Log.d(TAG, "gameUpDialog: kekw");
-
-//    mNavController.popBackStack();
-
-//    AlertDialog dialog = new AlertDialog.Builder(requireActivity())
-//            .setTitle(title)
-//            .setMessage(body)
-//            .setPositiveButton("okay", (d, which) -> {
-//              mNavController.popBackStack();
-//            })
-//            .setCancelable(false)
-//            .create();
-//    dialog.show();
   }
 
   public void checkGameEnd() {
     if (gameEnded) return;
     String player = "";
-    if ( Objects.equals(gameArray[0], gameArray[1]) && Objects.equals(gameArray[0], gameArray[2]) && !Objects.equals(gameArray[0], "") ) {
-      player = gameArray[0];
-      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( Objects.equals(gameArray[3], gameArray[4]) && Objects.equals(gameArray[3], gameArray[5]) && !Objects.equals(gameArray[3], "") ) {
-      player = gameArray[3];
-      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( Objects.equals(gameArray[6], gameArray[7]) && Objects.equals(gameArray[6], gameArray[8]) && !Objects.equals(gameArray[6], "") ) {
-      player = gameArray[6];
-      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( Objects.equals(gameArray[0], gameArray[3]) && Objects.equals(gameArray[0], gameArray[6]) && !Objects.equals(gameArray[0], "") ) {
-      player = gameArray[0];
-      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( Objects.equals(gameArray[1], gameArray[4]) && Objects.equals(gameArray[1], gameArray[7]) && !Objects.equals(gameArray[1], "") ) {
-      player = gameArray[1];
-      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( Objects.equals(gameArray[2], gameArray[5]) && Objects.equals(gameArray[2], gameArray[8]) && !Objects.equals(gameArray[2], "") ) {
-      player = gameArray[2];
-      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( Objects.equals(gameArray[0], gameArray[4]) && Objects.equals(gameArray[0], gameArray[8]) && !Objects.equals(gameArray[0], "") ) {
-      player = gameArray[0];
-      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( Objects.equals(gameArray[2], gameArray[4]) && Objects.equals(gameArray[2], gameArray[6]) && !Objects.equals(gameArray[2], "") ) {
-      player = gameArray[2];
-      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( !Arrays.asList(gameArray).contains("") ) {
+    if ( Objects.equals(grid[0], grid[1]) && Objects.equals(grid[0], grid[2]) && !Objects.equals(grid[0], "") ) {
+      player = grid[0];
+      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( Objects.equals(grid[3], grid[4]) && Objects.equals(grid[3], grid[5]) && !Objects.equals(grid[3], "") ) {
+      player = grid[3];
+      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( Objects.equals(grid[6], grid[7]) && Objects.equals(grid[6], grid[8]) && !Objects.equals(grid[6], "") ) {
+      player = grid[6];
+      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( Objects.equals(grid[0], grid[3]) && Objects.equals(grid[0], grid[6]) && !Objects.equals(grid[0], "") ) {
+      player = grid[0];
+      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( Objects.equals(grid[1], grid[4]) && Objects.equals(grid[1], grid[7]) && !Objects.equals(grid[1], "") ) {
+      player = grid[1];
+      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( Objects.equals(grid[2], grid[5]) && Objects.equals(grid[2], grid[8]) && !Objects.equals(grid[2], "") ) {
+      player = grid[2];
+      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( Objects.equals(grid[0], grid[4]) && Objects.equals(grid[0], grid[8]) && !Objects.equals(grid[0], "") ) {
+      player = grid[0];
+      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( Objects.equals(grid[2], grid[4]) && Objects.equals(grid[2], grid[6]) && !Objects.equals(grid[2], "") ) {
+      player = grid[2];
+      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( !Arrays.asList(grid).contains("") ) {
       player = "draw";
-      gameUpDialog("Draw", "It is a draw", "draw", gameType);
+      gameDialog("Draw", "It is a draw", "draw", gameType);
     }
   }
 
@@ -426,36 +359,36 @@ public class GameFragment extends Fragment {
   public int checkGameEnd2() {
     if (gameEnded) return 0;
     String player = "";
-    if ( Objects.equals(gameArray[0], gameArray[1]) && Objects.equals(gameArray[0], gameArray[2]) && !Objects.equals(gameArray[0], "") ) {
-      player = gameArray[0];
-//      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( Objects.equals(gameArray[3], gameArray[4]) && Objects.equals(gameArray[3], gameArray[5]) && !Objects.equals(gameArray[3], "") ) {
-      player = gameArray[3];
-//      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( Objects.equals(gameArray[6], gameArray[7]) && Objects.equals(gameArray[6], gameArray[8]) && !Objects.equals(gameArray[6], "") ) {
-      player = gameArray[6];
-//      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( Objects.equals(gameArray[0], gameArray[3]) && Objects.equals(gameArray[0], gameArray[6]) && !Objects.equals(gameArray[0], "") ) {
-      player = gameArray[0];
-//      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( Objects.equals(gameArray[1], gameArray[4]) && Objects.equals(gameArray[1], gameArray[7]) && !Objects.equals(gameArray[1], "") ) {
-      player = gameArray[1];
-//      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( Objects.equals(gameArray[2], gameArray[5]) && Objects.equals(gameArray[2], gameArray[8]) && !Objects.equals(gameArray[2], "") ) {
-      player = gameArray[2];
-//      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( Objects.equals(gameArray[0], gameArray[4]) && Objects.equals(gameArray[0], gameArray[8]) && !Objects.equals(gameArray[0], "") ) {
-      player = gameArray[0];
-//      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( Objects.equals(gameArray[2], gameArray[4]) && Objects.equals(gameArray[2], gameArray[6]) && !Objects.equals(gameArray[2], "") ) {
-      player = gameArray[2];
-//      gameUpDialog("Game Up", player + " wins!", player, gameType);
-    } else if ( !Arrays.asList(gameArray).contains("") ) {
+    if ( Objects.equals(grid[0], grid[1]) && Objects.equals(grid[0], grid[2]) && !Objects.equals(grid[0], "") ) {
+      player = grid[0];
+//      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( Objects.equals(grid[3], grid[4]) && Objects.equals(grid[3], grid[5]) && !Objects.equals(grid[3], "") ) {
+      player = grid[3];
+//      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( Objects.equals(grid[6], grid[7]) && Objects.equals(grid[6], grid[8]) && !Objects.equals(grid[6], "") ) {
+      player = grid[6];
+//      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( Objects.equals(grid[0], grid[3]) && Objects.equals(grid[0], grid[6]) && !Objects.equals(grid[0], "") ) {
+      player = grid[0];
+//      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( Objects.equals(grid[1], grid[4]) && Objects.equals(grid[1], grid[7]) && !Objects.equals(grid[1], "") ) {
+      player = grid[1];
+//      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( Objects.equals(grid[2], grid[5]) && Objects.equals(grid[2], grid[8]) && !Objects.equals(grid[2], "") ) {
+      player = grid[2];
+//      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( Objects.equals(grid[0], grid[4]) && Objects.equals(grid[0], grid[8]) && !Objects.equals(grid[0], "") ) {
+      player = grid[0];
+//      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( Objects.equals(grid[2], grid[4]) && Objects.equals(grid[2], grid[6]) && !Objects.equals(grid[2], "") ) {
+      player = grid[2];
+//      gameDialog("Game Up", player + " wins!", player, gameType);
+    } else if ( !Arrays.asList(grid).contains("") ) {
       player = "draw";
-//      gameUpDialog("Draw", "It is a draw", "draw", gameType);
+      gameDialog("Draw", "It is a draw", "draw", gameType);
     }
     if(player.equals("draw")) return 0;
-    if (player.equals(myChar)) return 1;
+    if (player.equals(myMove)) return 1;
     else return -1;
   }
 
@@ -466,19 +399,16 @@ public class GameFragment extends Fragment {
     gameReference.addValueEventListener(new ValueEventListener() {
       @Override
       public void onDataChange(@NonNull DataSnapshot snapshot) {
-        GameModel l = snapshot.getValue(GameModel.class);
+        GameModel gamemodel = snapshot.getValue(GameModel.class);
         if (game != null) {
-          game.updateGameArray(l);
+          game.updateGrid(gamemodel);
           gameID = game.getGameID();
-          gameArray = (game.getGameArray()).toArray(new String[9]);
+          grid = (game.getGrid()).toArray(new String[9]);
           gameEnd = game.isGameEnd();
 
           if (gameEnd && !gameEnded) {
-            Log.d(TAG, "onDataChange: uwu " + gameEnd);
-
-
             NavDirections action = (NavDirections) GameFragmentDirections.actionBack();
-            mNavController.navigate(action);
+            NavController.navigate(action);
             userReference.addListenerForSingleValueEvent(new ValueEventListener() {
               @Override
               public void onDataChange(DataSnapshot dataSnapshot) {
@@ -486,25 +416,18 @@ public class GameFragment extends Fragment {
                 value = value + 1;
                 dataSnapshot.getRef().child("wins").setValue(value);
               }
-
               @Override
               public void onCancelled(@NonNull DatabaseError error) {
 
               }
             });
-            Log.d(TAG, "onDataChange: no");
           } else {
-            Log.d(TAG, "waitForOtherPlayer: lol 2 " + game.getTurn());
-            Log.d(TAG, "waitForOtherPlayer: lol 2 " + game.isOpen());
-
-
             updateUI();
             myTurn = updateTurn(game.getTurn());
             checkGameEnd();
           }
         }
       }
-
       @Override
       public void onCancelled(@NonNull DatabaseError error) {
 
@@ -514,7 +437,7 @@ public class GameFragment extends Fragment {
 
   private void updateDB() {
     GameModel gm = new GameModel();
-    gameReference.child("gameArray").setValue(Arrays.asList(gameArray));
+    gameReference.child("grid").setValue(Arrays.asList(grid));
     gameReference.child("open").setValue(!gameEnded);
     gameReference.child("gameEnd").setValue(gameEnd);
     if (game.getTurn() == 1) {
@@ -528,9 +451,9 @@ public class GameFragment extends Fragment {
 
   public void updateUI() {
     for (int i = 0; i < 9; i++) {
-      if(!gameArray[i].isEmpty()) {
-        mButtons[i].setText(gameArray[i]);
-        mButtons[i].setClickable(false);
+      if(!grid[i].isEmpty()) {
+        Buttons[i].setText(grid[i]);
+        Buttons[i].setClickable(false);
       }
     }
   }

@@ -50,7 +50,7 @@ import java.util.Map;
 public class DashboardFragment extends Fragment {
 
   private static final String TAG = "DashboardFragment";
-  private NavController mNavController;
+  private NavController NavController;
   private FirebaseAuth auth;
   private DatabaseReference gamesRef, usersRef;
   private TextView wins, losses, draws;
@@ -65,12 +65,10 @@ public class DashboardFragment extends Fragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Log.d(TAG, "onCreate");
 
-    setHasOptionsMenu(true); // Needed to display the action menu for this fragment
+    setHasOptionsMenu(true);
     gamesRef = FirebaseDatabase.getInstance("https://tictactoe-ajbbk-default-rtdb.firebaseio.com/").getReference("games");
   }
-
   @Override
   public View onCreateView(LayoutInflater inflater,
                            ViewGroup container,
@@ -81,13 +79,12 @@ public class DashboardFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    mNavController = Navigation.findNavController(view);
+    NavController = Navigation.findNavController(view);
 
     auth = FirebaseAuth.getInstance();
     if (auth.getCurrentUser() == null) {
-      // No user is signed in
       NavDirections action = DashboardFragmentDirections.actionNeedAuth();
-      mNavController.navigate(action);
+      NavController.navigate(action);
     } else {
 
       wins = view.findViewById(R.id.txt_wins);
@@ -96,13 +93,9 @@ public class DashboardFragment extends Fragment {
 
       usersRef = FirebaseDatabase.getInstance("https://tictactoe-ajbbk-default-rtdb.firebaseio.com/").getReference("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-
       List<GameModel> gameIDs = new ArrayList<>();
 
-      RecyclerView rv = view.findViewById(R.id.list);
-
-//      rv.setAdapter(adapter);
-//      rv.setLayoutManager(new LinearLayoutManager(getContext()));
+      RecyclerView recyclerView = view.findViewById(R.id.list);
 
       gamesRef.addValueEventListener(new ValueEventListener() {
         @Override
@@ -112,10 +105,9 @@ public class DashboardFragment extends Fragment {
             GameModel game = shot.getValue(GameModel.class);
             if (game.isOpen() && !game.getHost().equals(auth.getCurrentUser().getUid())) gameIDs.add(game);
           }
-          rv.setAdapter(new OpenGamesAdapter(gameIDs, mNavController));
-          rv.setLayoutManager(new LinearLayoutManager(getContext()));
+          recyclerView.setAdapter(new OpenGamesAdapter(gameIDs, NavController));
+          recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         }
-
         @Override
         public void onCancelled(@NonNull DatabaseError error) {
 
@@ -129,17 +121,14 @@ public class DashboardFragment extends Fragment {
           losses.setText(snapshot.child("losses").getValue().toString());
           draws.setText(snapshot.child("draws").getValue().toString());
         }
-
         @Override
         public void onCancelled(@NonNull DatabaseError error) {
 
         }
       });
 
-      // Show a dialog when the user clicks the "new game" button
       view.findViewById(R.id.fab_new_game).setOnClickListener(v -> {
 
-        // A listener for the positive and negative buttons of the dialog
         DialogInterface.OnClickListener listener = (dialog, which) -> {
           String gameType = "No type";
           String gameID = "";
@@ -155,13 +144,10 @@ public class DashboardFragment extends Fragment {
           }
           Log.d(TAG, "New Game: " + gameType);
 
-          // Passing the game type as a parameter to the action
-          // extract it in GameFragment in a type safe way
           NavDirections action = (NavDirections) DashboardFragmentDirections.actionGame(gameType, gameID);
-          mNavController.navigate(action);
+          NavController.navigate(action);
         };
 
-        // create the dialog
         AlertDialog dialog = new AlertDialog.Builder(requireActivity())
                 .setTitle(R.string.new_game)
                 .setMessage(R.string.new_game_dialog_message)

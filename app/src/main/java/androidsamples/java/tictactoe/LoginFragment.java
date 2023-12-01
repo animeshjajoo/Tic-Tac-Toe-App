@@ -36,7 +36,7 @@ public class LoginFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private DatabaseReference userReference;
-    NavController mNavController;
+    NavController NavController;
     private String TAG = "LoginFragment";
 
     //    private DatabaseReference dbb;
@@ -61,7 +61,7 @@ public class LoginFragment extends Fragment {
                 .setOnClickListener(v -> {
 
                     String email = mEmail.getText().toString(), password = mPassword.getText().toString();
-                    mNavController = Navigation.findNavController(view);
+                    NavController = Navigation.findNavController(view);
 
                     if(email.equals("") || password.equals("")) {
                         Toast.makeText(getActivity(), "Please enter values", Toast.LENGTH_SHORT).show();

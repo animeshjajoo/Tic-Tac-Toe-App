@@ -18,8 +18,8 @@
   <string name="new_game_dialog_message">Which type of game do you want to create?</string>
   <string name="forfeit_game_dialog_message">Are you sure you want to forfeit this game?</string>
 
-  <string name="two_player">Two-Player</string>
-  <string name="one_player">One-Player</string>
+  <string name="two_player">Two Player</string>
+  <string name="one_player">Single Player</string>
 
   <string name="yes">Yes</string>
   <string name="cancel">Cancel</string>
