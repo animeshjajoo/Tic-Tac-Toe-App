@@ -27,7 +27,7 @@ This app creates a simulation of a Tic Tac Toe game that allows two players or a
 Description of Completed Tasks and Steps:
  
 Task 1 - Implementing Sign-in Screen:
-I initialized the Firebase database (firebaseio) and pushed user data to add a user. Users can log in with any email and password, enabling them to view active games in the database.
+I initialized the Firebase database (firebaseio) and pushed user data to add a user. Users can log in with any email and password, enabling them to view active games in the database. We tried using FireStore but had few problems checking realtime database updates.
  
 Task 2 - Implementing Single-Player Mode:
 After the user logs in, they can opt for a single-player game. In this mode, the computer randomly chooses a block after the player's turn.
