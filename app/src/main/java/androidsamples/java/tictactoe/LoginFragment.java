@@ -32,21 +32,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginFragment extends Fragment {
-    EditText mEmail, mPassword;
-    private FirebaseAuth mAuth;
-    private FirebaseUser mUser;
+    EditText Email, Password;
+    private FirebaseAuth AuthFB;
+    private FirebaseUser UserFB;
     private DatabaseReference userReference;
     NavController NavController;
     private String TAG = "LoginFragment";
 
-    //    private DatabaseReference dbb;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
+        AuthFB = FirebaseAuth.getInstance();
         userReference = FirebaseDatabase.getInstance("https://tictactoe-ajbbk-default-rtdb.firebaseio.com/").getReference("users");
         //if a user is logged in, go to Dashboard
-        if (mAuth.getCurrentUser() != null) {
+        if (AuthFB.getCurrentUser() != null) {
             NavHostFragment.findNavController(this).navigate(R.id.action_login_successful);
         }
     }
@@ -54,25 +53,25 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
-        mEmail = view.findViewById(R.id.edit_email);
-        mPassword = view.findViewById(R.id.edit_password);
+        Email = view.findViewById(R.id.edit_email);
+        Password = view.findViewById(R.id.edit_password);
 
         view.findViewById(R.id.btn_log_in)
                 .setOnClickListener(v -> {
 
-                    String email = mEmail.getText().toString(), password = mPassword.getText().toString();
+                    String email = Email.getText().toString(), password = Password.getText().toString();
                     NavController = Navigation.findNavController(view);
 
                     if(email.equals("") || password.equals("")) {
                         Toast.makeText(getActivity(), "Please enter values", Toast.LENGTH_SHORT).show();
                     } else {
-                        mAuth.createUserWithEmailAndPassword(email, password)
+                        AuthFB.createUserWithEmailAndPassword(email, password)
                                 .addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
                                         Log.d(TAG, "createUserWithEmail:success");
                                         Toast.makeText(getContext(), "User Registered", Toast.LENGTH_SHORT).show();
 
-                                        mUser = mAuth.getCurrentUser();
+                                        UserFB = AuthFB.getCurrentUser();
                                         userReference.child(task.getResult().getUser().getUid()).child("wins").setValue(0);
                                         userReference.child(task.getResult().getUser().getUid()).child("losses").setValue(0);
                                         userReference.child(task.getResult().getUser().getUid()).child("draws").setValue(0);
@@ -88,7 +87,7 @@ public class LoginFragment extends Fragment {
                                             Toast.makeText(getActivity(), "Incorrect credentials.", Toast.LENGTH_LONG)
                                                     .show();
                                         } catch (Exception e) {
-                                            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(
+                                            AuthFB.signInWithEmailAndPassword(email, password).addOnCompleteListener(
                                                     requireActivity(), task1 -> {
                                                         if (task1.isSuccessful()) {
                                                             Toast.makeText(getContext(), "Login Successful", Toast.LENGTH_SHORT).show();

@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class MainActivity extends AppCompatActivity {
 
   private static final String TAG = "MainActivity";
-  private FirebaseAuth mAuth;
+  private FirebaseAuth AuthFB;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -28,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
   public boolean onOptionsItemSelected(MenuItem item) {
     if (item.getItemId() == R.id.menu_logout) {
       Log.d(TAG, "logout clicked");
-      mAuth = FirebaseAuth.getInstance();
-      mAuth.signOut();
+      AuthFB = FirebaseAuth.getInstance();
+      AuthFB.signOut();
       NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
       navController.navigate(R.id.loginFragment);
       return true;
